@@ -1,0 +1,28 @@
+HOW TO
+
+
+BACKEND
+To set up database information it should be edited this file WEB-INF/spring/appServlet/servlet-context.xml inside war file "orders-backend.war"
+
+<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<beans:property name="url" value="jdbc:mysql://localhost:3306/Orders" />
+		<beans:property name="username" value="root" />
+		<beans:property name="password" value="toor" />
+</beans:bean>
+
+Also this property
+
+	<beans:prop key="hibernate.hbm2ddl.auto">create</beans:prop>
+
+can be modified if needed other behaviour. With this value all data is lost on every launch of the application.
+
+LOGGER of backend
+
+log4j.xml (WEB-INF/classes inside war) can be edited to convienence to view logs.
+
+Schema should be created before launching application. Tables will be created automatically so no need for SQL scripts except for schema
+(create database Orders)
+
+The war file is already included but it can be generated with single command : "mvn eclipse:clean eclipse:eclipse compile war:war"
