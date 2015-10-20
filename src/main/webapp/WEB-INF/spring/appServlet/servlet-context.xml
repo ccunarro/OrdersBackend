@@ -7,31 +7,16 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-	<!-- DispatcherServlet Context: defines this servlet's request-processing 
-		infrastructure -->
-
-	<!-- Enables the Spring MVC @Controller programming model -->
-	<annotation-driven />
-
-	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
-		up static resources in the ${webappRoot}/resources directory
-	<resources mapping="/resources/**" location="/resources/" />-->
-
-	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
-		in the /WEB-INF/views directory -->
-	<beans:bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<beans:property name="prefix" value="/WEB-INF/views/" />
-		<beans:property name="suffix" value=".jsp" />
+	<beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<beans:property name="location" value="classpath:backend.properties"/>
 	</beans:bean>
 
 	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
-		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<beans:property name="url"
-			value="jdbc:mysql://localhost:3306/Orders" />
-		<beans:property name="username" value="root" />
-		<beans:property name="password" value="toor" />
+		<beans:property name="driverClassName" value="${dataSource.driverClassName}" />
+		<beans:property name="url" value="${dataSource.url}" />
+		<beans:property name="username" value="${dataSource.username}" />
+		<beans:property name="password" value="${dataSource.password}" />
 	</beans:bean>
 
 	<!-- Hibernate 4 SessionFactory Bean definition -->
@@ -48,35 +33,18 @@
 		</beans:property>
 		<beans:property name="hibernateProperties">
 			<beans:props>
-				<beans:prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</beans:prop>
-				<beans:prop key="hibernate.show_sql">true</beans:prop>
-				<beans:prop key="hibernate.hbm2ddl.auto">create</beans:prop>
+				<beans:prop key="hibernate.dialect">${hibernate.dialect}</beans:prop>
+				<beans:prop key="hibernate.show_sql">${hibernate.show_sql}</beans:prop>
+				<beans:prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</beans:prop>
 				
 			</beans:props>
 		</beans:property>
 	</beans:bean>
 	
-	<beans:bean id="customerDao" class="uy.com.orders.dao.CustomerDAOImpl">
-		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
-	</beans:bean>
- 	<beans:bean id="customerService" class="uy.com.orders.service.CustomerServiceImpl">
-		<beans:property name="customerDao" ref="customerDao"></beans:property>
-	</beans:bean>
-	<beans:bean id="productDao" class="uy.com.orders.dao.ProductDAOImpl">
-		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
-	</beans:bean>
- 	<beans:bean id="productService" class="uy.com.orders.service.ProductServiceImpl">
-		<beans:property name="productDao" ref="productDao"></beans:property>
-	</beans:bean>
-	<beans:bean id="saleOrderDao" class="uy.com.orders.dao.SaleOrderDAOImpl">
-		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
-	</beans:bean>
-	<beans:bean id="saleOrderService" class="uy.com.orders.service.SaleOrderServiceImpl">
-		<beans:property name="saleOrderDao" ref="saleOrderDao"></beans:property>
-		<beans:property name="productDao" ref="productDao"></beans:property>
-	</beans:bean>
-	
 	<context:component-scan base-package="uy.com.orders.controller" />
+    <context:component-scan base-package="uy.com.orders.service" />
+    <context:component-scan base-package="uy.com.orders.dao" />
+    <context:component-scan base-package="uy.com.orders.model" />
 	
 	<tx:annotation-driven transaction-manager="transactionManager"/>
 	

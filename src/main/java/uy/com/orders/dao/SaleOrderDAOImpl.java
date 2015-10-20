@@ -9,12 +9,17 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import uy.com.orders.model.Customer;
 import uy.com.orders.model.LineOrder;
 import uy.com.orders.model.Product;
 import uy.com.orders.model.SaleOrder;
 
-public class SaleOrderDAOImpl implements SaleOrderDAO {
+import javax.transaction.Transactional;
+
+@Repository
+public class SaleOrderDAOImpl extends AbstractDAO<SaleOrder> implements SaleOrderDAO {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -27,14 +32,10 @@ public class SaleOrderDAOImpl implements SaleOrderDAO {
         this.sessionFactory = sessionFactory;
     }    
 
+	@Transactional
 	@Override
-	public SaleOrder save(SaleOrder s) {
-		Session session = null;
-		Transaction tx = null;
+	public SaleOrder saveOrder(SaleOrder s) {
 
-		try {
-			session = this.sessionFactory.openSession();			
-			tx = session.beginTransaction();				
 			BigDecimal total = BigDecimal.ZERO;
 			for(LineOrder line:s.getLines()){			
 				Product p = productDao.findObject(line.getProduct().getCode());				
@@ -48,67 +49,21 @@ public class SaleOrderDAOImpl implements SaleOrderDAO {
 			c.setCurrentCredit(c.getCurrentCredit().add(total));
 			customerDao.update(c);
 			s.setCustomer(c);
-			session.persist(s);
-			tx.commit();			
-			
-		} catch (RuntimeException e) {
-			try {
-				tx.rollback();
-			} catch (RuntimeException rbe) {
-				rbe.printStackTrace();
-			}
-			throw e;
-		} finally {
-			if (session != null) {
-				session.close();
-			}
-		}
+			getSession().persist(s);
+
 		return s;
 	}
-
 
 	@Override
-	public SaleOrder update(SaleOrder s) {
-		Session session = this.sessionFactory.openSession();
-		Query query = session.createQuery("update SaleOrder set customer = :customer "
-				+ "where orderNumber = :orderNumber");
-				query.setParameter("orderNumber", s.getOrderNumber());
-				query.setParameter("customer", s.getCustomer());
-
-		query.executeUpdate();
-		return s;
-		
+	public SaleOrder findObject(String orderNumber) {
+		return (SaleOrder) getSession().createQuery("from SaleOrder where orderNumber = :orderNumber ").uniqueResult();
 	}
+
+
 	
-	@Override
-	public SaleOrder findObject(String code) {
-		Session session = this.sessionFactory.openSession();
-		Query query = session.createQuery("from SaleOrder where order_number = :orderNumber ");
-		query.setParameter("orderNumber", code);
-		SaleOrder SaleOrder = (SaleOrder)query.uniqueResult();
-		session.close();	
-		return SaleOrder;
-	}
 
 
-	@Override
-	public void delete(String code) {
-		Session session = this.sessionFactory.openSession();
-		Query query = session.createQuery("delete SaleOrder where order_number = :orderNumber ");
-		query.setParameter("orderNumber", code);
-		query.executeUpdate();
-		session.close();
-		
-	}
 
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<SaleOrder> listObjects() {
-		Session session = this.sessionFactory.openSession();
-		List<SaleOrder> saleOrderList = session.createQuery("from SaleOrder").list();
-		session.close();
-		return saleOrderList;
-	}
 
 }

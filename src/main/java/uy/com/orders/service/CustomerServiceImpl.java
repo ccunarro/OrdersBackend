@@ -4,9 +4,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.stereotype.*;
+import org.springframework.stereotype.Service;
 import uy.com.orders.dao.CustomerDAO;
 import uy.com.orders.model.Customer;
 
+import javax.transaction.Transactional;
+
+@Service
+@Transactional
 public class CustomerServiceImpl implements CustomerService {
 	
 	@Autowired

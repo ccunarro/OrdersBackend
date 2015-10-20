@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.stereotype.*;
 import uy.com.orders.dao.CustomerDAO;
 import uy.com.orders.dao.ProductDAO;
 import uy.com.orders.dao.SaleOrderDAO;
@@ -18,6 +19,10 @@ import uy.com.orders.model.LineOrder;
 import uy.com.orders.model.Product;
 import uy.com.orders.model.SaleOrder;
 
+import javax.transaction.Transactional;
+
+@org.springframework.stereotype.Service
+@Transactional
 public class SaleOrderServiceImpl implements SaleOrderService {
 	
 	@Autowired
@@ -34,7 +39,7 @@ public class SaleOrderServiceImpl implements SaleOrderService {
 		
 		if(stockAvailable(s) && creditLimitIsOk(s)){		
 			if(saleOrderDao.findObject(s.getOrderNumber()) == null){
-				return saleOrderDao.save(s);			
+				return saleOrderDao.saveOrder(s);
 			}
 			else{
 				return saleOrderDao.update(s);

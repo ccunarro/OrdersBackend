@@ -4,6 +4,7 @@ import uy.com.orders.model.SaleOrder;
 
 public interface SaleOrderDAO extends Dao<SaleOrder> {
 
+    public SaleOrder saveOrder(SaleOrder sale);
 
 	
 }
