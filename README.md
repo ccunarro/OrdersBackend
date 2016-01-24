@@ -1,4 +1,6 @@
 # OrdersBackend
+Project done in 2 days as a test assignment for a remote job.
+
 Simple CRUD with Spring 4, Hibernate 4, maven 3, MySQL, Java 1.8 and Restful Webservices.
 
 The backend system was implemented using a layered approach where there are 3 different layers:
