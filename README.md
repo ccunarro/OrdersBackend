@@ -14,8 +14,3 @@ Service(uy.com.orders.service)
 Model (uy.com.orders.model, uy.com.orders.dao)
 	This layer is the one responsible to communicate with database. CRUD operations are done here. It exposes its methods through DAOs interfaces and then communicates with the database through model classes defined with JPA annotations and processed by hibernate.
 
-
-* It would be good to add JUnit tests.
-* Exception handling needs refactoring. 
-The implementation was to return specific http error codes for these controls(stock and credit 	limit). 
-
